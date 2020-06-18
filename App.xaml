@@ -1,0 +1,83 @@
+﻿<prism:PrismApplication x:Class="UnitPlanGenerator.App"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	                    xmlns:prism="http://prismlibrary.com/"
+                        xmlns:ui="http://schemas.modernwpf.com/2019"
+                        xmlns:converter="clr-namespace:UnitPlanGenerator.Converters"
+                        xmlns:templateSelector="clr-namespace:UnitPlanGenerator.TemplateSelectors"
+                        xmlns:model="clr-namespace:UnitPlanGenerator.Models"
+                        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                        xmlns:local="clr-namespace:UnitPlanGenerator">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemeResources />
+                <ui:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converter:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converter:EqualityToVisibilityConverter x:Key="EqualityToVisibilityConverter" />
+
+            <templateSelector:SubjectTemplateSelector x:Key="SubjectTemplateSelector" />
+
+            <converter:DatabaseProviderToStringConverter x:Key="DatabaseProviderToStringConverter" />
+            <ObjectDataProvider x:Key="DatabaseProviderItems"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="model:DatabaseProvider"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <DataTemplate DataType="{x:Type model:DatabaseProvider}">
+                <ContentPresenter Content="{Binding Converter={StaticResource DatabaseProviderToStringConverter}}" />
+            </DataTemplate>
+
+            <converter:UserRoleToStringConverter x:Key="UserRoleToStringConverter" />
+            <DataTemplate DataType="{x:Type model:Role}">
+                <ContentPresenter Content="{Binding Converter={StaticResource UserRoleToStringConverter}}" />
+            </DataTemplate>
+
+            <converter:SubjectTypeConverter x:Key="SubjectTypeConverter" />
+            <ObjectDataProvider x:Key="SubjectTypeItems"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="model:SubjectType"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <DataTemplate DataType="{x:Type model:SubjectType}">
+                <ContentPresenter Content="{Binding Converter={StaticResource SubjectTypeConverter}}" />
+            </DataTemplate>
+            
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DefaultTextBoxStyle}">
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="False">
+                        <Setter Property="ui:ControlHelper.Description"
+                                Value=" " />
+                    </Trigger>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ui:ControlHelper.Description"
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            
+            <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DefaultPasswordBoxStyle}">
+                <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="False">
+                        <Setter Property="ui:ControlHelper.Description"
+                                Value=" " />
+                    </Trigger>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ui:ControlHelper.Description"
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                        <Setter Property="BorderThickness" Value="{DynamicResource TextControlBorderThemeThicknessFocused}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</prism:PrismApplication>
